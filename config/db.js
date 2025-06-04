@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
-const config = require('config');
-const db = config.get('MONGOURL'); // make sure MONGOURL is defined in config/default.json
+require('dotenv').config(); 
+
+const db = process.env.MONGOURL;
 
 const connectDB = async () => {
     try {
-        await mongoose.connect(db);
+        await mongoose.connect(db); // Clean and updated
         console.log('MongoDB connected successfully...');
     } catch (err) {
         console.error(err.message);
