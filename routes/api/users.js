@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+require('dotenv').config(); // Add this line
 const { check, validationResult } = require('express-validator');
 
 const User = require('../../models/User');
@@ -13,7 +15,7 @@ router.post(
   '/',
   [
     check('name', 'Name is required.').not().isEmpty(),
-    check('email', 'Please include a valid email.').isEmail(), // fixed: should be isEmail()
+    check('email', 'Please include a valid email.').isEmail(),
     check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
   ],
   async (req, res) => {
@@ -22,40 +24,49 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const {name,email,password} = req.body;
+    const {name, email, password} = req.body;
 
-    try{
+    try {
       let user = await User.findOne({ email });
 
-      if(user){
-        return res.status(400).json({ errors: [{msg : 'User already exists.'}]});
+      if(user) {
+        return res.status(400).json({ errors: [{msg: 'User already exists.'}] });
       }
 
-      //gravatar usage
       const avatar = gravatar.url(email, {
         s: '200',
         r: 'pg',
         d: 'mm'
-      })
+      });
 
       user = new User({
         name,
         email,
         avatar,
         password
-      })
+      });
 
-      //the password is not yet encrypted , so we'll do that
       const salt = await bcrypt.genSalt(10);
-
-      user.password = await bcrypt.hash(password,salt);
-
+      user.password = await bcrypt.hash(password, salt);
       await user.save();
 
+      const payload = {
+        user: {
+          id: user.id
+        }
+      };
 
-
-      res.send('User registered!!');
-    }catch(err){
+      jwt.sign(
+        payload,
+        process.env.JWT, // Using JWT secret from .env
+        { expiresIn: '1h' },
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        }
+      );
+      
+    } catch(err) {
       console.error(err.message);
       res.status(500).send('Server error.');
     }
