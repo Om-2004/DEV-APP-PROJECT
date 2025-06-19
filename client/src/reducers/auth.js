@@ -2,45 +2,52 @@ import{
     REGISTER_SUCCESS,
     REGISTER_FAIL,
     USER_LOADED,
-    AUTH_ERROR
+    AUTH_ERROR,
+    LOGIN_SUCCESS,
+    LOGIN_FAIL,
+    LOGOUT
 } from '../actions/types';
 
 const initialState = {
     token: localStorage.getItem('token'),
     isAuthenticated: null,
-    loading: true,  //when loaded (.i.e. whenever we get response, we'll set loading to false, true by default)
+    loading: true,  // when loaded, we'll set loading to false; true by default
     user: null
-}
+};
 
-export default function(state=initialState, action) {
-    const {type,payload} = action;
+export default function(state = initialState, action) {
+    const { type, payload } = action;
 
-    switch(type){
+    switch (type) {
         case USER_LOADED:
-            return{
+            return {
                 ...state,
                 isAuthenticated: true,
-                loading:false,
-                user: payload   // defensive, supports nested response and it consists of name,email and pass
-            }
+                loading: false,
+                user: payload
+            };
         case REGISTER_SUCCESS:
-            localStorage.setItem('token', payload.token);   //save data to localStorage(taken via Vanilla Javascript)
-            return{
+        case LOGIN_SUCCESS:
+            localStorage.setItem('token', payload.token);
+            return {
                 ...state,
                 ...payload,
                 isAuthenticated: true,
                 loading: false
-            }
+            };
         case REGISTER_FAIL:
         case AUTH_ERROR:
+        case LOGIN_FAIL:
+        case LOGOUT:
             localStorage.removeItem('token');
-            return{
+            return {
                 ...state,
                 token: null,
                 isAuthenticated: false,
-                loading: true
-            }
-        default: 
+                loading: false,  // set to false so nav links render
+                user: null
+            };
+        default:
             return state;
     }
 }

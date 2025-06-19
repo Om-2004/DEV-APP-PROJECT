@@ -6,29 +6,25 @@ import {
   REGISTER_SUCCESS,
   REGISTER_FAIL,
   USER_LOADED,
-  AUTH_ERROR
+  AUTH_ERROR,
+  LOGIN_SUCCESS,
+  LOGIN_FAIL,
+  LOGOUT 
 } from './types';
 import setAuthToken from '../utils/setAuthToken';
 
 //Load User
 export const loadUser = () => async dispatch => {
-    if(localStorage.token){
-        setAuthToken(localStorage.token);
-    }
-
-    try {
-        const res = await axios.get('/api/auth');
-
-        dispatch({
-            type:USER_LOADED,
-            payload: res.data
-        });
-    } catch (err) {
-        dispatch({
-            type: AUTH_ERROR
-        })
-    }
-}; 
+  if (localStorage.token) {
+    setAuthToken(localStorage.token);
+  }
+  try {
+    const res = await axios.get('/api/auth');
+    dispatch({ type: USER_LOADED, payload: res.data });
+  } catch (err) {
+    dispatch({ type: AUTH_ERROR });
+  }
+};
 
 // Register user
 export const register = ({ name, email, password }) => async dispatch => {
@@ -49,6 +45,8 @@ export const register = ({ name, email, password }) => async dispatch => {
       type: REGISTER_SUCCESS,
       payload: res.data
     });
+
+    dispatch(loadUser());
   } catch (err) {
     // If your API returns { errors: [ { msg: '...', param: '...' } ] }
     const errors = err.response?.data?.errors;
@@ -63,4 +61,50 @@ export const register = ({ name, email, password }) => async dispatch => {
       type: REGISTER_FAIL
     });
   }
+};
+
+
+// Login user
+export const login = (email, password) => async dispatch => {
+  // Fix typo in header name
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
+  // Prepare the data to send forward
+  const body = JSON.stringify({ email, password });
+
+  try {
+    const res = await axios.post('/api/auth', body, config);
+
+    dispatch({
+      type: LOGIN_SUCCESS,
+      payload: res.data
+    });
+
+    dispatch(loadUser());
+  } catch (err) {
+    // If your API returns { errors: [ { msg: '...', param: '...' } ] }
+    const errors = err.response?.data?.errors;
+
+    if (Array.isArray(errors)) {
+      errors.forEach(error =>
+        dispatch(setAlert(error.msg, 'danger'))
+      );
+    }
+
+    dispatch({
+      type: LOGIN_FAIL
+    });
+  }
+};
+
+
+//Logout / Clear profile
+export const logout = () => dispatch => {
+  dispatch({
+    type: LOGOUT
+  });
 };
