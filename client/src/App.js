@@ -6,13 +6,19 @@ import Landing  from './components/Layout/Landing';
 import Login    from './components/auth/Login';
 import Register from './components/auth/Register';
 import Alert    from './components/Layout/Alert';
+import Dashboard from './components/dashboard/Dashboard';
+import CreateProfile from './components/profile-forms/CreateProfile';
+import PrivateRoute from './components/Routing/PrivateRoute';
+import EditProfile from './components/profile-forms/EditProfile';
+import AddExperience from './components/profile-forms/AddExperience';
+import AddEducation from './components/profile-forms/AddEducation';
 import './App.css';
 
 import { Provider }      from 'react-redux';
 import store             from './store';
 import { loadUser }      from './actions/auth';
 import setAuthToken      from './utils/setAuthToken';  // ← import here
-
+ 
 // If a token exists, set it as a default header for all requests
 if (localStorage.token) {
   setAuthToken(localStorage.token);
@@ -46,7 +52,36 @@ const App = () => {
             <Route element={<ContainerLayout />}>
               <Route path="/register" element={<Register />} />
               <Route path="/login"    element={<Login />} />
-            </Route>
+              <Route path="/dashboard" element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              } />
+
+              <Route path="/create-profile" element={
+                <PrivateRoute>
+                  <CreateProfile />
+                </PrivateRoute>
+              } />
+
+              <Route path="/edit-profile" element={
+                <PrivateRoute>
+                  <EditProfile />
+                </PrivateRoute>
+              } />
+
+              <Route path="/add-experience" element={
+                <PrivateRoute>
+                  <AddExperience />
+                </PrivateRoute>
+              } />
+
+              <Route path="/add-education" element={
+                <PrivateRoute>
+                  <AddEducation />
+                </PrivateRoute>
+              } />
+            </Route> 
           </Routes>
         </Fragment>
       </Router>

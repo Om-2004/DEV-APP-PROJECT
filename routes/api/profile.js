@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
 const Profile = require('../../models/Profile');
+const Post = require('../../models/Post');
 require('dotenv').config();
 const request = require('request');
 const User = require('../../models/User');
@@ -126,19 +127,24 @@ router.get('/user/:user_id', async (req,res) => {
 // @route    DELETE api/profile
 // @desc     delete profile,users and posts
 // @access   Private
-router.delete('/',auth, async (req,res) => {
-    try{
-        // Delete profile
-        await Profile.findOneAndDelete({ user: req.user.id });
+router.delete('/', auth, async (req, res) => {
+  try {
+    // ✅ Delete user's posts first
+    await Post.deleteMany({ user: req.user.id });
 
-        // Delete user
-        await User.findOneAndDelete({ _id: req.user.id });
-        res.json({msg: 'User removed successfully.'});
-    }catch(err){
-        console.error(err.message);
-        res.status(500).send('Server error');
-    }
+    // ✅ Delete user's profile
+    await Profile.findOneAndDelete({ user: req.user.id });
+
+    // ✅ Delete user account
+    await User.findOneAndDelete({ _id: req.user.id });
+
+    res.json({ msg: 'User, profile, and posts deleted successfully.' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
 });
+
 
 // @route    PUT api/profile/experience
 // @desc     Add profile user experience
@@ -222,7 +228,7 @@ router.put('/education', [auth,
     [
         check('school', 'Title is required.').notEmpty(),
         check('degree', 'Company is required.').notEmpty(),
-        check('fieldOfStudy', 'From date is required.').notEmpty(),
+        check('fieldofStudy', 'From date is required.').notEmpty(),
         check('from', 'From date is required.').notEmpty()
     ]
 ], async(req,res) => {
@@ -234,7 +240,7 @@ router.put('/education', [auth,
     const {
         school,
         degree,
-        fieldOfStudy,
+        fieldofstudy,
         from,
         to,
         current,
@@ -244,12 +250,12 @@ router.put('/education', [auth,
     const newEdu = {
         school,
         degree,
-        fieldOfStudy,
+        fieldofstudy,
         from,
         to,
         current,
         description
-    }
+    };
     
     try {
         const profile = await Profile.findOne({ user: req.user.id });
