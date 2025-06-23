@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 const ProfileTop = ({
   profile: {
-    user: { name, avatar },
+    user,
     status,
     company,
     location,
@@ -11,6 +11,9 @@ const ProfileTop = ({
     social
   }
 }) => {
+  const name = user?.name || 'Unknown User';
+  const avatar = user?.avatar || 'https://www.gravatar.com/avatar?d=mp&s=200';
+
   return (
     <div className="profile-top bg-primary p-2">
       <img className="round-img my-1" src={avatar} alt={`${name}'s avatar`} />
