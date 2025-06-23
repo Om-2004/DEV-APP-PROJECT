@@ -1,8 +1,7 @@
-// middleware/auth.js
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
-module.exports = function(req, res, next) {
+module.exports = function (req, res, next) {
   // Get token from header
   const token = req.header('x-auth-token');
 
@@ -13,7 +12,7 @@ module.exports = function(req, res, next) {
 
   // Verify token
   try {
-    const decoded = jwt.verify(token, process.env.JWT);
+    const decoded = jwt.verify(token, config.get('JWT')); // ✅ use config here
     req.user = decoded.user;
     next();
   } catch (err) {

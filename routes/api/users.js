@@ -3,7 +3,7 @@ const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-require('dotenv').config(); // Add this line
+const config = require('config'); 
 const { check, validationResult } = require('express-validator');
 
 const User = require('../../models/User');
@@ -37,7 +37,7 @@ router.post(
         s: '200',
         r: 'pg',
         d: 'mm'
-      });
+      }, true); // ✅ force HTTPS
 
       user = new User({
         name,
@@ -58,7 +58,7 @@ router.post(
 
       jwt.sign(
         payload,
-        process.env.JWT, // Using JWT secret from .env
+        config.get('JWT'),
         { expiresIn: '1h' },
         (err, token) => {
           if (err) throw err;

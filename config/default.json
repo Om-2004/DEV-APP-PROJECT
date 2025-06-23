@@ -1,3 +1,7 @@
 {
-  "MONGOURL": ""
+  "MONGOURL": "mongodb+srv://om22210286:dWkr6V3j5v3Q2FWo@courseracluster.uvfjqdt.mongodb.net/?retryWrites=true&w=majority&appName=CourseraCLUSTER",
+  "JWT": "JWT=MySecretKey",
+  "GitHubClientID": "Ov23liIc8M1MwEe8XKya",
+  "GitHubSecret": "e397a7bcfe3821032ae337cbb810c55c580a5416",
+  "port": 5000
 }
