@@ -20,12 +20,14 @@ app.use('/api/posts', require('./routes/api/posts'));
 
 //Serve static assets in production
 // Serve static assets in production
+// Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
   // Serve React’s build output
   app.use(express.static(path.join(__dirname, 'client', 'build')));
 
-  // Handle React routing, return all requests to React app
-  app.get('/*', (req, res) => {
+  // Catch all remaining requests and return React’s index.html
+  // — use a regex instead of a string wildcard
+  app.get(/^\/.*$/, (req, res) => {
     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
   });
 }
