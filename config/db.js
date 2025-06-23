@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const config = require('config'); // ✅ Load config package
+const config = require('config');
 
-const db = config.get('MONGOURL'); // ✅ Reads from default.json or production.json
+const db = process.env.MONGO_URL || config.get('MONGOURL'); // ✅ Environment override support
 
 const connectDB = async () => {
   try {
@@ -12,7 +12,7 @@ const connectDB = async () => {
     console.log('MongoDB connected successfully...');
   } catch (err) {
     console.error(err.message);
-    process.exit(1); // Exit process with failure
+    process.exit(1);
   }
 };
 
