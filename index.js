@@ -4,7 +4,6 @@ const config = require('config');
 const path = require('path');
 require('dotenv').config();
 
-
 const app = express();
 
 // Initialise middleware
@@ -20,13 +19,15 @@ app.use('/api/profile', require('./routes/api/profile'));
 app.use('/api/posts', require('./routes/api/posts'));
 
 //Serve static assets in production
-if(process.env.NODE_ENV === 'production'){
-    //set static folder
-    app.use(express.static('client/build'));
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  // Serve React’s build output
+  app.use(express.static(path.join(__dirname, 'client', 'build')));
 
-    app.get('*', (req,res) => {
-        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-    });
+  // Handle React routing, return all requests to React app
+  app.get('/*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+  });
 }
 
 // ✅ Load port from config (with fallback)
