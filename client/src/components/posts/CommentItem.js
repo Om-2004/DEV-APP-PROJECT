@@ -32,7 +32,7 @@ const CommentItem = ({
   </div>
 );
 
-CommentItem.propTypes = {
+CommentItem.propTypes = { 
   comment: PropTypes.object.isRequired,
   postId: PropTypes.string.isRequired,
   auth: PropTypes.object.isRequired,
