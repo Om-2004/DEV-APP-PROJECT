@@ -210,7 +210,7 @@ router.put(
     [
       check('school', 'Title is required.').notEmpty(),
       check('degree', 'Company is required.').notEmpty(),
-      check('fieldofStudy', 'From date is required.').notEmpty(),
+      check('fieldofstudy', 'From date is required.').notEmpty(),
       check('from', 'From date is required.').notEmpty()
     ]
   ],
